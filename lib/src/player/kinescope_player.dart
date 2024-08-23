@@ -109,6 +109,13 @@ class _KinescopePlayerState extends State<KinescopePlayer> {
               },
             )
             ..addJavaScriptHandler(
+              handlerName: 'enterCustomFullscreen',
+              callback: (args) {
+                // Вызовите здесь ваш кастомный полноэкранный режим
+                widget.controller.onChangeFullscreen?.call(true);
+              },
+            )
+            ..addJavaScriptHandler(
               handlerName: 'getDurationResult',
               callback: (args) {
                 final dynamic seconds = args.first;
@@ -295,6 +302,15 @@ class _KinescopePlayerState extends State<KinescopePlayer> {
             if (kinescopePlayer != null)
               kinescopePlayer.unmute();
         }
+        document.addEventListener("fullscreenchange", function(event) {
+          if (document.fullscreenElement) {
+              // Прерываем нативный полноэкранный режим
+              document.exitFullscreen();
+      
+              // Вызываем кастомный полноэкранный режим через Flutter
+              window.flutter_inappwebview.callHandler('enterCustomFullscreen');
+          }
+        });
     </script>
 </head>
 
