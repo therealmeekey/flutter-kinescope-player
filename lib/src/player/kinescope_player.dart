@@ -152,14 +152,6 @@ class _KinescopePlayerState extends State<KinescopePlayer> {
             ? NavigationActionPolicy.ALLOW
             : NavigationActionPolicy.CANCEL,
         onConsoleMessage: (_, consoleMessage) {
-          final message = consoleMessage.message;
-          if (message.contains('onEnterFullscreen')) {
-            // Вход в полноэкранный режим
-            widget.controller.onChangeFullscreen?.call(true);
-          } else if (message.contains('onExitFullscreen')) {
-            // Выход из полноэкранного режима
-            widget.controller.onChangeFullscreen?.call(false);
-          }
           debugPrint('js: ${consoleMessage.message}');
         },
         initialData: InAppWebViewInitialData(
@@ -305,10 +297,7 @@ class _KinescopePlayerState extends State<KinescopePlayer> {
         }
         document.addEventListener("fullscreenchange", function(event) {
           if (document.fullscreenElement) {
-              // Прерываем нативный полноэкранный режим
               document.exitFullscreen();
-      
-              // Вызываем кастомный полноэкранный режим через Flutter
               window.flutter_inappwebview.callHandler('enterCustomFullscreen');
           }
         });
