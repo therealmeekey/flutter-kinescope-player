@@ -62,6 +62,7 @@ class _KinescopePlayerState extends State<KinescopePlayer> {
   late String videoId;
   late String externalId;
   late String baseUrl;
+
   @override
   void initState() {
     super.initState();
@@ -91,7 +92,7 @@ class _KinescopePlayerState extends State<KinescopePlayer> {
 
                 widget.controller.statusController.add(
                   KinescopePlayerStatus.values.firstWhere(
-                    (value) => value.toString() == event,
+                        (value) => value.toString() == event,
                     orElse: () => KinescopePlayerStatus.unknown,
                   ),
                 );
@@ -108,6 +109,16 @@ class _KinescopePlayerState extends State<KinescopePlayer> {
                 }
               },
             )
+            ..addJavaScriptHandler(
+                handlerName: 'fullscreenHandler',
+                callback: (args) {
+                  if (args.isNotEmpty && args[0] == 'enter') {
+                    widget.controller.onChangeFullscreen?.call(true);
+                  } else if (args.isNotEmpty && args[0] == 'exit') {
+                    widget.controller.onChangeFullscreen?.call(false);
+                  }
+                  return null;
+                })
             ..addJavaScriptHandler(
               handlerName: 'getDurationResult',
               callback: (args) {

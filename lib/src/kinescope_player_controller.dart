@@ -44,14 +44,17 @@ class KinescopePlayerController {
   /// [Stream], that provides current player status
   Stream<KinescopePlayerStatus> get status => statusController.stream;
 
+  void Function(bool)? onChangeFullscreen;
+
   /// Currently playing video id
   String get videoId => _videoId;
 
   KinescopePlayerController(
-    /// The video id with which the player initializes.
-    String videoId, {
-    this.parameters = const PlayerParameters(),
-  }) : _videoId = videoId;
+      /// The video id with which the player initializes.
+      String videoId, {
+        this.parameters = const PlayerParameters(),
+        this.onChangeFullscreen,
+      }) : _videoId = videoId;
 
   /// Loads the video as per the [videoId] provided.
   void load(String videoId) {
