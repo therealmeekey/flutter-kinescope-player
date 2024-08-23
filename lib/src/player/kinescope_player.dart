@@ -113,6 +113,7 @@ class _KinescopePlayerState extends State<KinescopePlayer> {
               callback: (args) {
                 // Вызовите здесь ваш кастомный полноэкранный режим
                 widget.controller.onChangeFullscreen?.call(true);
+                widget.controller.onChangeFullscreen!(true);
               },
             )
             ..addJavaScriptHandler(
