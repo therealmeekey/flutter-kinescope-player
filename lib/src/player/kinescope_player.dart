@@ -120,16 +120,6 @@ class _KinescopePlayerState extends State<KinescopePlayer> {
               },
             );
         },
-        onConsoleMessage: (controller, consoleMessage) {
-          final message = consoleMessage.message;
-          if (message.contains('onEnterFullscreen')) {
-            // Вход в полноэкранный режим
-            widget.controller.onChangeFullscreen?.call(true);
-          } else if (message.contains('onExitFullscreen')) {
-            // Выход из полноэкранного режима
-            widget.controller.onChangeFullscreen?.call(false);
-          }
-        },
         initialSettings: InAppWebViewSettings(
           useShouldOverrideUrlLoading: true,
           mediaPlaybackRequiresUserGesture: false,
@@ -153,8 +143,16 @@ class _KinescopePlayerState extends State<KinescopePlayer> {
         shouldOverrideUrlLoading: (_, __) async => Platform.isIOS
             ? NavigationActionPolicy.ALLOW
             : NavigationActionPolicy.CANCEL,
-        onConsoleMessage: (_, message) {
-          debugPrint('js: ${message.message}');
+        onConsoleMessage: (_, consoleMessage) {
+          final message = consoleMessage.message;
+          if (message.contains('onEnterFullscreen')) {
+            // Вход в полноэкранный режим
+            widget.controller.onChangeFullscreen?.call(true);
+          } else if (message.contains('onExitFullscreen')) {
+            // Выход из полноэкранного режима
+            widget.controller.onChangeFullscreen?.call(false);
+          }
+          debugPrint('js: ${consoleMessage.message}');
         },
         initialData: InAppWebViewInitialData(
           data: _player,
