@@ -46,12 +46,14 @@ class KinescopePlayer extends StatefulWidget {
   /// Aspect ratio for the player,
   /// by default it's 16 / 9.
   final double aspectRatio;
+  final bool inCustomFullscreen;
 
   /// A widget to play Kinescope videos.
   const KinescopePlayer({
     Key? key,
     required this.controller,
     this.aspectRatio = 16 / 9,
+    this.inCustomFullscreen = false,
   }) : super(key: key);
 
   @override
@@ -62,6 +64,7 @@ class _KinescopePlayerState extends State<KinescopePlayer> {
   late String videoId;
   late String externalId;
   late String baseUrl;
+
   @override
   void initState() {
     super.initState();
@@ -294,7 +297,7 @@ class _KinescopePlayerState extends State<KinescopePlayer> {
               kinescopePlayer.unmute();
         }
         document.addEventListener("fullscreenchange", function(event) {
-          if (document.fullscreenElement) {
+          if (document.fullscreenElement && ${widget.inCustomFullscreen}) {
               document.exitFullscreen();
               window.flutter_inappwebview.callHandler('enterCustomFullscreen');
           }
