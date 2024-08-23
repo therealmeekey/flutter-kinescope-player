@@ -297,9 +297,11 @@ class _KinescopePlayerState extends State<KinescopePlayer> {
               kinescopePlayer.unmute();
         }
         document.addEventListener("fullscreenchange", function(event) {
-          if (document.fullscreenElement && ${widget.inCustomFullscreen}) {
-              document.exitFullscreen();
-              window.flutter_inappwebview.callHandler('enterCustomFullscreen');
+          if (document.fullscreenElement) {
+            if (${widget.inCustomFullscreen}) {
+                document.exitFullscreen();
+                }
+            window.flutter_inappwebview.callHandler('enterCustomFullscreen');
           }
         });
     </script>
