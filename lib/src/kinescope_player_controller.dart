@@ -138,6 +138,11 @@ class KinescopePlayerController {
     webViewController.evaluateJavascript(source: 'unmute();');
   }
 
+
+  void getPlaybackRate() {
+    webViewController.evaluateJavascript(source: 'getPlaybackRate();');
+  }
+
   /// Close [statusController]
   void dispose() {
     statusController.close();

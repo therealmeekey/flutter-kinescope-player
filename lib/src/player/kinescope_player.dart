@@ -286,6 +286,11 @@ class _KinescopePlayerState extends State<KinescopePlayer> {
         function setVolume(value) {
             if (kinescopePlayer != null)
               kinescopePlayer.setVolume(value);
+        }       
+         
+        function getPlaybackRate() {
+            if (kinescopePlayer != null)
+              kinescopePlayer.getPlaybackRate();
         }
 
         function mute() {
