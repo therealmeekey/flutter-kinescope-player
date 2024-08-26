@@ -108,6 +108,8 @@ class _KinescopePlayerState extends State<KinescopePlayer> {
                   widget.controller.getCurrentTimeCompleter?.complete(
                     Duration(milliseconds: (seconds * 1000).ceil()),
                   );
+                  widget.controller.currentTimeController
+                      .add(Duration(milliseconds: (seconds * 1000).ceil()));
                 }
               },
             )
@@ -136,7 +138,6 @@ class _KinescopePlayerState extends State<KinescopePlayer> {
           disableContextMenu: true,
           supportZoom: false,
           userAgent: widget.controller.parameters.userAgent ?? getUserArgent(),
-          useHybridComposition: true,
           allowsInlineMediaPlayback: true,
           allowsBackForwardNavigationGestures: false,
         ),

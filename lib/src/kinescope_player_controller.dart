@@ -32,6 +32,9 @@ class KinescopePlayerController {
   /// StreamController for [status] stream.
   final statusController = StreamController<KinescopePlayerStatus>();
 
+  /// StreamController for [currentTime] stream.
+  final currentTimeController = StreamController<Duration>();
+
   /// Controller to communicate with WebView.
   late InAppWebViewController webViewController;
 
@@ -44,17 +47,19 @@ class KinescopePlayerController {
   /// [Stream], that provides current player status
   Stream<KinescopePlayerStatus> get status => statusController.stream;
 
+  Stream<Duration> get currentTime => currentTimeController.stream;
+
   void Function(bool)? onChangeFullscreen;
 
   /// Currently playing video id
   String get videoId => _videoId;
 
   KinescopePlayerController(
-      /// The video id with which the player initializes.
-      String videoId, {
-        this.parameters = const PlayerParameters(),
-        this.onChangeFullscreen,
-      }) : _videoId = videoId;
+    /// The video id with which the player initializes.
+    String videoId, {
+    this.parameters = const PlayerParameters(),
+    this.onChangeFullscreen,
+  }) : _videoId = videoId;
 
   /// Loads the video as per the [videoId] provided.
   void load(String videoId) {
@@ -136,5 +141,6 @@ class KinescopePlayerController {
   /// Close [statusController]
   void dispose() {
     statusController.close();
+    currentTimeController.close();
   }
 }
