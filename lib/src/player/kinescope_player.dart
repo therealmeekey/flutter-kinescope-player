@@ -71,6 +71,7 @@ class _KinescopePlayerState extends State<KinescopePlayer> {
     videoId = widget.controller.videoId;
     externalId = widget.controller.parameters.externalId ?? '';
     baseUrl = widget.controller.parameters.baseUrl ?? 'https://kinescope.io';
+    widget.controller.startPlaybackRateUpdates(); // Запуск обновления скорости
   }
 
   @override
@@ -108,8 +109,6 @@ class _KinescopePlayerState extends State<KinescopePlayer> {
                   widget.controller.getCurrentTimeCompleter?.complete(
                     Duration(milliseconds: (seconds * 1000).ceil()),
                   );
-                  widget.controller.currentTimeController
-                      .add(Duration(milliseconds: (seconds * 1000).ceil()));
                 }
               },
             )

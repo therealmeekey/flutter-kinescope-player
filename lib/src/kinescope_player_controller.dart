@@ -33,9 +33,11 @@ class KinescopePlayerController {
   /// StreamController for [status] stream.
   final statusController = StreamController<KinescopePlayerStatus>();
 
-  /// StreamController for [currentTime] stream.
-  final currentTimeController = StreamController<Duration>();
-
+  final playbackRateController =
+      StreamController<double>(); // Stream для скорости
+  Timer? _playbackRateTimer; // Таймер для скорости
+  Stream<double> get playbackRate =>
+      playbackRateController.stream; // Stream скорости
   /// Controller to communicate with WebView.
   late InAppWebViewController webViewController;
 
@@ -49,8 +51,6 @@ class KinescopePlayerController {
 
   /// [Stream], that provides current player status
   Stream<KinescopePlayerStatus> get status => statusController.stream;
-
-  Stream<Duration> get currentTime => currentTimeController.stream;
 
   void Function(bool)? onChangeFullscreen;
 
@@ -131,6 +131,24 @@ class KinescopePlayerController {
     }
   }
 
+  /// Запускаем обновления текущей скорости видео
+  void startPlaybackRateUpdates() {
+    _playbackRateTimer = Timer.periodic(const Duration(seconds: 1), (_) async {
+      try {
+        final playbackRate = await getPlaybackRate();
+        playbackRateController.add(playbackRate);
+      } catch (e) {
+        if (kDebugMode) {
+          print("Error updating playback rate: $e");
+        }
+      }
+    });
+  }
+
+  void stopPlaybackRateUpdates() {
+    _playbackRateTimer?.cancel();
+    _playbackRateTimer = null;
+  }
 
   Future<double> getPlaybackRate() async {
     getPlaybackRateCompleter = Completer<double>();
@@ -155,7 +173,8 @@ class KinescopePlayerController {
 
   /// Close [statusController]
   void dispose() {
+    stopPlaybackRateUpdates();
     statusController.close();
-    currentTimeController.close();
+    playbackRateController.close();
   }
 }
