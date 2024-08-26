@@ -15,6 +15,7 @@
 // ignore_for_file: member-ordering-extended
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:flutter_kinescope_sdk/src/data/player_parameters.dart';
 import 'package:flutter_kinescope_sdk/src/data/player_status.dart';
@@ -43,6 +44,8 @@ class KinescopePlayerController {
 
   /// [Completer] for [getDuration] method
   Completer<Duration>? getDurationCompleter;
+
+  Completer<double>? getPlaybackRateCompleter;
 
   /// [Stream], that provides current player status
   Stream<KinescopePlayerStatus> get status => statusController.stream;
@@ -128,6 +131,18 @@ class KinescopePlayerController {
     }
   }
 
+
+  Future<double> getPlaybackRate() async {
+    getPlaybackRateCompleter = Completer<double>();
+
+    await webViewController.evaluateJavascript(
+      source: 'getPlaybackRate();',
+    );
+
+    final playbackRate = await getPlaybackRateCompleter?.future;
+    return playbackRate ?? 1.0;
+  }
+
   /// Mutes the player.
   void mute() {
     webViewController.evaluateJavascript(source: 'mute();');
@@ -136,11 +151,6 @@ class KinescopePlayerController {
   /// Unmutes the player.
   void unmute() {
     webViewController.evaluateJavascript(source: 'unmute();');
-  }
-
-
-  void getPlaybackRate() {
-    webViewController.evaluateJavascript(source: 'getPlaybackRate();');
   }
 
   /// Close [statusController]

@@ -14,7 +14,7 @@
 
 import 'dart:io';
 
-import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:flutter/foundation.dart' show kDebugMode, kIsWeb;
 import 'package:flutter/widgets.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 
@@ -110,6 +110,16 @@ class _KinescopePlayerState extends State<KinescopePlayer> {
                   );
                   widget.controller.currentTimeController
                       .add(Duration(milliseconds: (seconds * 1000).ceil()));
+                }
+              },
+            )
+            ..addJavaScriptHandler(
+              handlerName: 'getPlaybackRateResult',
+              callback: (args) {
+                final dynamic seconds = args.first;
+                if (seconds is num) {
+                  widget.controller.getPlaybackRateCompleter
+                      ?.complete(seconds.toDouble());
                 }
               },
             )
@@ -287,15 +297,17 @@ class _KinescopePlayerState extends State<KinescopePlayer> {
             if (kinescopePlayer != null)
               kinescopePlayer.setVolume(value);
         }       
-         
-        function getPlaybackRate() {
-            if (kinescopePlayer != null)
-              kinescopePlayer.getPlaybackRate();
-        }
 
         function mute() {
             if (kinescopePlayer != null)
               kinescopePlayer.mute();
+        }
+        
+        function getPlaybackRate() {
+            if (kinescopePlayer != null)
+              kinescopePlayer.getPlaybackRate().then((value) => {
+                window.flutter_inappwebview.callHandler('getPlaybackRateResult', value);
+              });
         }
 
         function unmute() {
