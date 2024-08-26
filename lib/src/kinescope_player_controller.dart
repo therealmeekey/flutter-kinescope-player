@@ -133,10 +133,14 @@ class KinescopePlayerController {
 
   /// Запускаем обновления текущей скорости видео
   void startPlaybackRateUpdates() {
+    double previousPlaybackRate = 1;
     _playbackRateTimer = Timer.periodic(const Duration(seconds: 1), (_) async {
       try {
         final playbackRate = await getPlaybackRate();
-        playbackRateController.add(playbackRate);
+        if (previousPlaybackRate != playbackRate) {
+          previousPlaybackRate = playbackRate;
+          playbackRateController.add(playbackRate);
+        }
       } catch (e) {
         if (kDebugMode) {
           print("Error updating playback rate: $e");
