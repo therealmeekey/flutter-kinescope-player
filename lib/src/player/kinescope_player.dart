@@ -308,6 +308,10 @@ class _KinescopePlayerState extends State<KinescopePlayer> {
                 window.flutter_inappwebview.callHandler('getPlaybackRateResult', value);
               });
         }
+        function setPlaybackRate(value) {
+            if (kinescopePlayer != null)
+              kinescopePlayer.setPlaybackRate(value);
+        }
 
         function unmute() {
             if (kinescopePlayer != null)

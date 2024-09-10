@@ -102,6 +102,12 @@ class KinescopePlayerController {
     return time ?? Duration.zero;
   }
 
+  void setPlaybackRate(double value) {
+    if (value > 0 || value <= 2) {
+      webViewController.evaluateJavascript(source: 'setPlaybackRate($value);');
+    }
+  }
+
   /// Get duration of video.
   Future<Duration> getDuration() async {
     getDurationCompleter = Completer<Duration>();
