@@ -33,11 +33,6 @@ class KinescopePlayerController {
   /// StreamController for [status] stream.
   final statusController = StreamController<KinescopePlayerStatus>();
 
-  final playbackRateController =
-      StreamController<double>(); // Stream для скорости
-  Timer? _playbackRateTimer; // Таймер для скорости
-  Stream<double> get playbackRate =>
-      playbackRateController.stream; // Stream скорости
   /// Controller to communicate with WebView.
   late InAppWebViewController webViewController;
 
@@ -53,6 +48,7 @@ class KinescopePlayerController {
   Stream<KinescopePlayerStatus> get status => statusController.stream;
 
   void Function(bool)? onChangeFullscreen;
+  void Function(double)? onChangePlaybackRate;
 
   /// Currently playing video id
   String get videoId => _videoId;
@@ -62,6 +58,7 @@ class KinescopePlayerController {
     String videoId, {
     this.parameters = const PlayerParameters(),
     this.onChangeFullscreen,
+    this.onChangePlaybackRate,
   }) : _videoId = videoId;
 
   /// Loads the video as per the [videoId] provided.
@@ -137,29 +134,6 @@ class KinescopePlayerController {
     }
   }
 
-  /// Запускаем обновления текущей скорости видео
-  void startPlaybackRateUpdates() {
-    double previousPlaybackRate = 1;
-    _playbackRateTimer = Timer.periodic(const Duration(seconds: 1), (_) async {
-      try {
-        final playbackRate = await getPlaybackRate();
-        if (previousPlaybackRate != playbackRate) {
-          previousPlaybackRate = playbackRate;
-          playbackRateController.add(playbackRate);
-        }
-      } catch (e) {
-        if (kDebugMode) {
-          print("Error updating playback rate: $e");
-        }
-      }
-    });
-  }
-
-  void stopPlaybackRateUpdates() {
-    _playbackRateTimer?.cancel();
-    _playbackRateTimer = null;
-  }
-
   Future<double> getPlaybackRate() async {
     getPlaybackRateCompleter = Completer<double>();
 
@@ -183,8 +157,6 @@ class KinescopePlayerController {
 
   /// Close [statusController]
   void dispose() {
-    stopPlaybackRateUpdates();
     statusController.close();
-    playbackRateController.close();
   }
 }

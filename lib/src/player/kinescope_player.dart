@@ -71,7 +71,6 @@ class _KinescopePlayerState extends State<KinescopePlayer> {
     videoId = widget.controller.videoId;
     externalId = widget.controller.parameters.externalId ?? '';
     baseUrl = widget.controller.parameters.baseUrl ?? 'https://kinescope.io';
-    widget.controller.startPlaybackRateUpdates(); // Запуск обновления скорости
   }
 
   @override
@@ -115,11 +114,19 @@ class _KinescopePlayerState extends State<KinescopePlayer> {
             ..addJavaScriptHandler(
               handlerName: 'getPlaybackRateResult',
               callback: (args) {
-                final dynamic seconds = args.first;
-                if (seconds is num) {
+                final dynamic currentSpeed = args.first;
+                if (currentSpeed is num) {
                   widget.controller.getPlaybackRateCompleter
-                      ?.complete(seconds.toDouble());
+                      ?.complete(currentSpeed.toDouble());
                 }
+              },
+            )
+            ..addJavaScriptHandler(
+              handlerName: 'playbackRateEvent',
+              callback: (args) async {
+                final currentSpeed = await widget.controller.getPlaybackRate();
+                widget.controller.onChangePlaybackRate
+                    ?.call(currentSpeed.toDouble());
               },
             )
             ..addJavaScriptHandler(
@@ -249,6 +256,7 @@ class _KinescopePlayerState extends State<KinescopePlayer> {
                         player.on(player.Events.Waiting, function (event) { window.flutter_inappwebview.callHandler('events', 'waiting'); });
                         player.on(player.Events.Pause, function (event) { window.flutter_inappwebview.callHandler('events', 'pause'); });
                         player.on(player.Events.Ended, function (event) { window.flutter_inappwebview.callHandler('events', 'ended'); });
+                        player.on(player.Events.PlaybackRateChange, function (playbackRate) { window.flutter_inappwebview.callHandler('playbackRateEvent', 'playbackRate'); });
                     });
             }
         }
