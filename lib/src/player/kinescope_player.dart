@@ -124,9 +124,11 @@ class _KinescopePlayerState extends State<KinescopePlayer> {
             ..addJavaScriptHandler(
               handlerName: 'playbackRateEvent',
               callback: (args) async {
-                final currentSpeed = await widget.controller.getPlaybackRate();
-                widget.controller.onChangePlaybackRate
-                    ?.call(currentSpeed.toDouble());
+                final dynamic currentSpeed = args.first;
+                if (currentSpeed is num) {
+                  widget.controller.onChangePlaybackRate
+                      ?.call(currentSpeed.toDouble());
+                }
               },
             )
             ..addJavaScriptHandler(
@@ -256,7 +258,15 @@ class _KinescopePlayerState extends State<KinescopePlayer> {
                         player.on(player.Events.Waiting, function (event) { window.flutter_inappwebview.callHandler('events', 'waiting'); });
                         player.on(player.Events.Pause, function (event) { window.flutter_inappwebview.callHandler('events', 'pause'); });
                         player.on(player.Events.Ended, function (event) { window.flutter_inappwebview.callHandler('events', 'ended'); });
-                        player.on(player.Events.PlaybackRateChange, function (playbackRate) { window.flutter_inappwebview.callHandler('playbackRateEvent', 'playbackRate'); });
+                        player.on(player.Events.PlaybackRateChange, function (data) { window.flutter_inappwebview.callHandler('playbackRateEvent', data.data.playbackRate);});
+                        player.on(player.Events.FullscreenChange, function (data) {
+                        if (data.data.isFullscreen) {
+                            if (${widget.inCustomFullscreen}) {
+                              document.exitFullscreen();
+                            }
+                            window.flutter_inappwebview.callHandler('enterCustomFullscreen');
+                        }
+                        });
                     });
             }
         }
@@ -325,14 +335,6 @@ class _KinescopePlayerState extends State<KinescopePlayer> {
             if (kinescopePlayer != null)
               kinescopePlayer.unmute();
         }
-        document.addEventListener("fullscreenchange", function(event) {
-          if (document.fullscreenElement) {
-            if (${widget.inCustomFullscreen}) {
-                document.exitFullscreen();
-                }
-            window.flutter_inappwebview.callHandler('enterCustomFullscreen');
-          }
-        });
     </script>
 </head>
 
