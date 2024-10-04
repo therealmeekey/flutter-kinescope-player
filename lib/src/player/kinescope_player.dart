@@ -262,20 +262,7 @@ class _KinescopePlayerState extends State<KinescopePlayer> {
                         player.on(player.Events.Pause, function (event) { window.flutter_inappwebview.callHandler('events', 'pause'); });
                         player.on(player.Events.Ended, function (event) { window.flutter_inappwebview.callHandler('events', 'ended'); });
                         player.on(player.Events.PlaybackRateChange, function (data) { window.flutter_inappwebview.callHandler('playbackRateEvent', data.data.playbackRate);});
-                        player.on(player.Events.FullscreenChange, function (data) {
-                        if (${widget.inCustomFullscreen}) {
-                          if (document.exitFullscreen) {
-                              document.exitFullscreen();
-                          } else if (document.webkitExitFullscreen) {
-                              document.webkitExitFullscreen();
-                          } else if (document.mozCancelFullScreen) {
-                              document.mozCancelFullScreen();
-                          } else if (document.msExitFullscreen) {
-                              document.msExitFullscreen();
-                          }
-                        }
-                        window.flutter_inappwebview.callHandler('enterCustomFullscreen');
-                        });
+                    
                     });
             }
         }
@@ -344,6 +331,22 @@ class _KinescopePlayerState extends State<KinescopePlayer> {
             if (kinescopePlayer != null)
               kinescopePlayer.unmute();
         }
+        document.addEventListener("fullscreenchange", function(event) {
+          if (document.fullscreenElement) {
+          if (${widget.inCustomFullscreen}) {
+            if (document.exitFullscreen) {
+                document.exitFullscreen();
+            } else if (document.webkitExitFullscreen) {
+                document.webkitExitFullscreen();
+            } else if (document.mozCancelFullScreen) {
+                document.mozCancelFullScreen();
+            } else if (document.msExitFullscreen) {
+                document.msExitFullscreen();
+            }
+          }
+          window.flutter_inappwebview.callHandler('enterCustomFullscreen');
+          }
+        });
     </script>
 </head>
 
