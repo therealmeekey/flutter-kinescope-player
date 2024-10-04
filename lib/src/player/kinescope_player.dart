@@ -260,12 +260,10 @@ class _KinescopePlayerState extends State<KinescopePlayer> {
                         player.on(player.Events.Ended, function (event) { window.flutter_inappwebview.callHandler('events', 'ended'); });
                         player.on(player.Events.PlaybackRateChange, function (data) { window.flutter_inappwebview.callHandler('playbackRateEvent', data.data.playbackRate);});
                         player.on(player.Events.FullscreenChange, function (data) {
-                            if (data.data.isFullscreen) {
-                                if (${widget.inCustomFullscreen}) {
-                                  document.exitFullscreen();
-                                }
-                            }
-                            window.flutter_inappwebview.callHandler('enterCustomFullscreen');
+                        if (${widget.inCustomFullscreen}) {
+                          document.exitFullscreen();
+                        }
+                        window.flutter_inappwebview.callHandler('enterCustomFullscreen');
                         });
                     });
             }
