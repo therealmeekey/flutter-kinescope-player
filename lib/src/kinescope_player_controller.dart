@@ -31,7 +31,8 @@ class KinescopePlayerController {
   final PlayerParameters parameters;
 
   /// StreamController for [status] stream.
-  final statusController = StreamController<KinescopePlayerStatus>();
+  late StreamController<KinescopePlayerStatus> statusController =
+      StreamController<KinescopePlayerStatus>();
 
   /// Controller to communicate with WebView.
   late InAppWebViewController webViewController;

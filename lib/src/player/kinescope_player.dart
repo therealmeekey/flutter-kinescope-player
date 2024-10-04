@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/foundation.dart' show kDebugMode, kIsWeb;
@@ -68,6 +69,8 @@ class _KinescopePlayerState extends State<KinescopePlayer> {
   @override
   void initState() {
     super.initState();
+    widget.controller.statusController =
+        StreamController<KinescopePlayerStatus>();
     videoId = widget.controller.videoId;
     externalId = widget.controller.parameters.externalId ?? '';
     baseUrl = widget.controller.parameters.baseUrl ?? 'https://kinescope.io';
