@@ -48,7 +48,7 @@ class KinescopePlayerController {
   /// [Stream], that provides current player status
   Stream<KinescopePlayerStatus> get status => statusController.stream;
 
-  void Function(bool)? onChangeFullscreen;
+  void Function()? onChangeFullscreen;
   void Function(double)? onChangePlaybackRate;
 
   /// Currently playing video id
