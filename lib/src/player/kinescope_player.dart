@@ -265,7 +265,7 @@ class _KinescopePlayerState extends State<KinescopePlayer> {
                         player.on(player.Events.FullscreenChange, function (data) {
                         if (data.data.isFullscreen) {
                           if (${widget.inCustomFullscreen}) {
-                          console.log(inCustomFullscreen ${widget.inCustomFullscreen});
+                          console.log('inCustomFullscreen ${widget.inCustomFullscreen}');
                             if (document.exitFullscreen) {
                                 document.exitFullscreen();
                             } else if (document.webkitExitFullscreen) {
