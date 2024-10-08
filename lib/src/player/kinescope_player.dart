@@ -47,14 +47,14 @@ class KinescopePlayer extends StatefulWidget {
   /// Aspect ratio for the player,
   /// by default it's 16 / 9.
   final double aspectRatio;
-  final bool inCustomFullscreen;
+  final bool isCustomFullscreen;
 
   /// A widget to play Kinescope videos.
   const KinescopePlayer({
     Key? key,
     required this.controller,
     this.aspectRatio = 16 / 9,
-    this.inCustomFullscreen = false,
+    this.isCustomFullscreen = false,
   }) : super(key: key);
 
   @override
@@ -69,11 +69,11 @@ class _KinescopePlayerState extends State<KinescopePlayer> {
   @override
   void initState() {
     super.initState();
-    widget.controller.statusController =
-        StreamController<KinescopePlayerStatus>();
     videoId = widget.controller.videoId;
     externalId = widget.controller.parameters.externalId ?? '';
     baseUrl = widget.controller.parameters.baseUrl ?? 'https://kinescope.io';
+    widget.controller.statusController =
+        StreamController<KinescopePlayerStatus>();
   }
 
   @override
@@ -135,9 +135,10 @@ class _KinescopePlayerState extends State<KinescopePlayer> {
               },
             )
             ..addJavaScriptHandler(
-              handlerName: 'enterCustomFullscreen',
+              handlerName: 'onChangeFullscreen',
               callback: (args) {
-                widget.controller.onChangeFullscreen?.call();
+                final bool isFullscreen = args.first;
+                widget.controller.onChangeFullscreen?.call(isFullscreen);
               },
             )
             ..addJavaScriptHandler(
@@ -262,22 +263,22 @@ class _KinescopePlayerState extends State<KinescopePlayer> {
                         player.on(player.Events.Pause, function (event) { window.flutter_inappwebview.callHandler('events', 'pause'); });
                         player.on(player.Events.Ended, function (event) { window.flutter_inappwebview.callHandler('events', 'ended'); });
                         player.on(player.Events.PlaybackRateChange, function (data) { window.flutter_inappwebview.callHandler('playbackRateEvent', data.data.playbackRate);});
-                        player.on(player.Events.FullscreenChange, function (data) {
-                        if (data.data.isFullscreen) {
-                          if (${widget.inCustomFullscreen}) {
-                          console.log('inCustomFullscreen ${widget.inCustomFullscreen}');
-                            if (document.exitFullscreen) {
-                                document.exitFullscreen();
-                            } else if (document.webkitExitFullscreen) {
-                                document.webkitExitFullscreen();
-                            } else if (document.mozCancelFullScreen) {
-                                document.mozCancelFullScreen();
-                            } else if (document.msExitFullscreen) {
-                                document.msExitFullscreen();
+                        player.on(player.Events.FullscreenChange, async function (data) {
+                          if (data.data.isFullscreen) {
+                            if (${widget.isCustomFullscreen}) {
+                              window.flutter_inappwebview.callHandler('onChangeFullscreen', data.data.isFullscreen);
+                              if (document.exitFullscreen) {
+                                 document.exitFullscreen();
+                              } else if (document.webkitExitFullscreen) {
+                                 document.webkitExitFullscreen();
+                              } else if (document.mozCancelFullScreen) {
+                                 document.mozCancelFullScreen();
+                              } else if (document.msExitFullscreen) {
+                                 document.msExitFullscreen();
+                              }
                             }
                           }
-                        }
-                        window.flutter_inappwebview.callHandler('enterCustomFullscreen');
+  
                         });
                     });
             }

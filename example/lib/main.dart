@@ -84,9 +84,7 @@ class _HomePageState extends State<HomePage> {
             children: [
               SizedBox(
                 height: MediaQuery.of(context).size.height / 4,
-                child: KinescopePlayer(
-                  controller: _kinescopeController,
-                ),
+                child: KinescopePlayer(controller: _kinescopeController),
               ),
               Padding(
                 padding: const EdgeInsets.all(8.0),
