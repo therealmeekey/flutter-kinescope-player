@@ -47,14 +47,12 @@ class KinescopePlayer extends StatefulWidget {
   /// Aspect ratio for the player,
   /// by default it's 16 / 9.
   final double aspectRatio;
-  final bool isCustomFullscreen;
 
   /// A widget to play Kinescope videos.
   const KinescopePlayer({
     Key? key,
     required this.controller,
     this.aspectRatio = 16 / 9,
-    this.isCustomFullscreen = false,
   }) : super(key: key);
 
   @override
@@ -198,169 +196,154 @@ class _KinescopePlayerState extends State<KinescopePlayer> {
 
   // ignore: member-ordering-extended
   String get _player => '''
-<!DOCTYPE html>
-<html>
-
-<head>
-    <meta charset="utf-8" />
-    <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no'>
-    <style>
-        #player {
-            position: fixed;
-            width: 100%;
-            height: 100%;
-            left: 0;
-            top: 0;
-        }
-    </style>
-
-    <script>
-        window.addEventListener("flutterInAppWebViewPlatformReady", function (event) {
-            window.flutter_inappwebview.callHandler('events', 'ready');
-        });
-
-        let kinescopePlayerFactory = null;
-
-        let kinescopePlayer = null;
-
-        let initialVideoUri = '${UriBuilder.buildVideoUri(videoId: videoId)}';
-
-        function onKinescopeIframeAPIReady(playerFactory) {
-            kinescopePlayerFactory = playerFactory;
-
-            loadVideo(initialVideoUri);
-        }
-
-        function loadVideo(videoUri) {
-            if (kinescopePlayer != null) {
-                kinescopePlayer.destroy();
-                kinescopePlayer = null;
-            }
-
-            if (kinescopePlayerFactory != null) {
-                var devElement = document.createElement("div");
-                devElement.id = "player";
-                document.body.append(devElement);
-
-                kinescopePlayerFactory
-                    .create('player', {
-                        url: videoUri,
-                        size: { width: '100%', height: '100%' },
-                        settings: {
-                          externalId: '${externalId}'
-                        },
-                        behaviour: ${UriBuilder.parametersToBehavior(widget.controller.parameters)},
-                        ui: ${UriBuilder.parametersToUI(widget.controller.parameters)}
-                    })
-                    .then(function (player) {
-                        kinescopePlayer = player;
-                        player.once(player.Events.Ready, function (event) {
-                          event.target.seekTo(${UriBuilder.parameterSeekTo(widget.controller.parameters)});
-                        });
-                        player.on(player.Events.Ready, function (event) { window.flutter_inappwebview.callHandler('events', 'ready'); });
-                        player.on(player.Events.Playing, function (event) { window.flutter_inappwebview.callHandler('events', 'playing'); });
-                        player.on(player.Events.Waiting, function (event) { window.flutter_inappwebview.callHandler('events', 'waiting'); });
-                        player.on(player.Events.Pause, function (event) { window.flutter_inappwebview.callHandler('events', 'pause'); });
-                        player.on(player.Events.Ended, function (event) { window.flutter_inappwebview.callHandler('events', 'ended'); });
-                        player.on(player.Events.PlaybackRateChange, function (data) { window.flutter_inappwebview.callHandler('playbackRateEvent', data.data.playbackRate);});
-                        player.on(player.Events.FullscreenChange, async function (data) {
-                          if (data.data.isFullscreen) {
-                            if (${widget.isCustomFullscreen}) {
-                              window.flutter_inappwebview.callHandler('onChangeFullscreen', data.data.isFullscreen);
-                              if (document.exitFullscreen) {
-                                 document.exitFullscreen();
-                              } else if (document.webkitExitFullscreen) {
-                                 document.webkitExitFullscreen();
-                              } else if (document.mozCancelFullScreen) {
-                                 document.mozCancelFullScreen();
-                              } else if (document.msExitFullscreen) {
-                                 document.msExitFullscreen();
-                              }
-                            }
-                          }
+  <!DOCTYPE html>
+  <html>
   
-                        });
-                    });
-            }
-        }
-
-        function play() {
-            if (kinescopePlayer != null)
-              kinescopePlayer.play();
-        }
-
-        function pause() {
-            if (kinescopePlayer != null)
-              kinescopePlayer.pause();
-        }
-
-        function stop() {
-            if (kinescopePlayer != null)
-              kinescopePlayer.stop();
-        }
-
-        function getCurrentTime() {
-            if (kinescopePlayer != null)
-              return kinescopePlayer.getCurrentTime();
-        }
-
-        function seekTo(seconds) {
-            if (kinescopePlayer != null)
-              kinescopePlayer.seekTo(seconds);
-        }
-
-        function getCurrentTime() {
-            if (kinescopePlayer != null)
-              kinescopePlayer.getCurrentTime().then((value) => {
-                window.flutter_inappwebview.callHandler('getCurrentTimeResult', value);
-              });
-        }
-
-        function getDuration() {
-            if (kinescopePlayer != null)
-              kinescopePlayer.getDuration().then((value) => {
-                window.flutter_inappwebview.callHandler('getDurationResult', value);
-              });
-        }
-
-        function setVolume(value) {
-            if (kinescopePlayer != null)
-              kinescopePlayer.setVolume(value);
-        }       
-
-        function mute() {
-            if (kinescopePlayer != null)
-              kinescopePlayer.mute();
-        }
-        
-        function getPlaybackRate() {
-            if (kinescopePlayer != null)
-              kinescopePlayer.getPlaybackRate().then((value) => {
-                window.flutter_inappwebview.callHandler('getPlaybackRateResult', value);
-              });
-        }
-        function setPlaybackRate(value) {
-            if (kinescopePlayer != null)
-              kinescopePlayer.setPlaybackRate(value);
-        }
-
-        function unmute() {
-            if (kinescopePlayer != null)
-              kinescopePlayer.unmute();
-        }
-    </script>
-</head>
-
-<body>
-    <script>
-        var tag = document.createElement('script');
-
-        tag.src = 'https://player.kinescope.io/latest/iframe.player.js';
-        var firstScriptTag = document.getElementsByTagName('script')[0];
-        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
-    </script>
-</body>
-
-</html>
+  <head>
+      <meta charset="utf-8" />
+      <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no'>
+      <style>
+          #player {
+              position: fixed;
+              width: 100%;
+              height: 100%;
+              left: 0;
+              top: 0;
+          }
+      </style>
+  
+      <script>
+          window.addEventListener("flutterInAppWebViewPlatformReady", function (event) {
+              window.flutter_inappwebview.callHandler('events', 'ready');
+          });
+  
+          let kinescopePlayerFactory = null;
+  
+          let kinescopePlayer = null;
+  
+          let initialVideoUri = '${UriBuilder.buildVideoUri(videoId: videoId)}';
+  
+          function onKinescopeIframeAPIReady(playerFactory) {
+              kinescopePlayerFactory = playerFactory;
+  
+              loadVideo(initialVideoUri);
+          }
+  
+          function loadVideo(videoUri) {
+              if (kinescopePlayer != null) {
+                  kinescopePlayer.destroy();
+                  kinescopePlayer = null;
+              }
+  
+              if (kinescopePlayerFactory != null) {
+                  var devElement = document.createElement("div");
+                  devElement.id = "player";
+                  document.body.append(devElement);
+  
+                  kinescopePlayerFactory
+                      .create('player', {
+                          url: videoUri,
+                          size: { width: '100%', height: '100%' },
+                          settings: {
+                            externalId: '${externalId}'
+                          },
+                          behaviour: ${UriBuilder.parametersToBehavior(widget.controller.parameters)},
+                          ui: ${UriBuilder.parametersToUI(widget.controller.parameters)}
+                      })
+                      .then(function (player) {
+                          kinescopePlayer = player;
+                          player.once(player.Events.Ready, function (event) {
+                            event.target.seekTo(${UriBuilder.parameterSeekTo(widget.controller.parameters)});
+                          });
+                          player.on(player.Events.Ready, function (event) { window.flutter_inappwebview.callHandler('events', 'ready'); });
+                          player.on(player.Events.Playing, function (event) { window.flutter_inappwebview.callHandler('events', 'playing'); });
+                          player.on(player.Events.Waiting, function (event) { window.flutter_inappwebview.callHandler('events', 'waiting'); });
+                          player.on(player.Events.Pause, function (event) { window.flutter_inappwebview.callHandler('events', 'pause'); });
+                          player.on(player.Events.Ended, function (event) { window.flutter_inappwebview.callHandler('events', 'ended'); });
+                          player.on(player.Events.PlaybackRateChange, function (data) { window.flutter_inappwebview.callHandler('playbackRateEvent', data.data.playbackRate);});
+                          player.on(player.Events.FullscreenChange, async function (data) { window.flutter_inappwebview.callHandler('onChangeFullscreen', data.data.isFullscreen);
+                          });
+                      });
+              }
+          }
+  
+          function play() {
+              if (kinescopePlayer != null)
+                kinescopePlayer.play();
+          }
+  
+          function pause() {
+              if (kinescopePlayer != null)
+                kinescopePlayer.pause();
+          }
+  
+          function stop() {
+              if (kinescopePlayer != null)
+                kinescopePlayer.stop();
+          }
+  
+          function getCurrentTime() {
+              if (kinescopePlayer != null)
+                return kinescopePlayer.getCurrentTime();
+          }
+  
+          function seekTo(seconds) {
+              if (kinescopePlayer != null)
+                kinescopePlayer.seekTo(seconds);
+          }
+  
+          function getCurrentTime() {
+              if (kinescopePlayer != null)
+                kinescopePlayer.getCurrentTime().then((value) => {
+                  window.flutter_inappwebview.callHandler('getCurrentTimeResult', value);
+                });
+          }
+  
+          function getDuration() {
+              if (kinescopePlayer != null)
+                kinescopePlayer.getDuration().then((value) => {
+                  window.flutter_inappwebview.callHandler('getDurationResult', value);
+                });
+          }
+  
+          function setVolume(value) {
+              if (kinescopePlayer != null)
+                kinescopePlayer.setVolume(value);
+          }       
+  
+          function mute() {
+              if (kinescopePlayer != null)
+                kinescopePlayer.mute();
+          }
+          
+          function getPlaybackRate() {
+              if (kinescopePlayer != null)
+                kinescopePlayer.getPlaybackRate().then((value) => {
+                  window.flutter_inappwebview.callHandler('getPlaybackRateResult', value);
+                });
+          }
+          function setPlaybackRate(value) {
+              if (kinescopePlayer != null)
+                kinescopePlayer.setPlaybackRate(value);
+          }
+  
+          function unmute() {
+              if (kinescopePlayer != null)
+                kinescopePlayer.unmute();
+          }
+      </script>
+  </head>
+  
+  <body>
+      <script>
+          var tag = document.createElement('script');
+  
+          tag.src = 'https://player.kinescope.io/latest/iframe.player.js';
+          var firstScriptTag = document.getElementsByTagName('script')[0];
+          firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+      </script>
+  </body>
+  
+  </html>
 ''';
 }
