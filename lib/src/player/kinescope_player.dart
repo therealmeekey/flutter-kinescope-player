@@ -70,8 +70,6 @@ class _KinescopePlayerState extends State<KinescopePlayer> {
     videoId = widget.controller.videoId;
     externalId = widget.controller.parameters.externalId ?? '';
     baseUrl = widget.controller.parameters.baseUrl ?? 'https://kinescope.io';
-    widget.controller.statusController =
-        StreamController<KinescopePlayerStatus>();
   }
 
   @override
@@ -129,6 +127,15 @@ class _KinescopePlayerState extends State<KinescopePlayer> {
                 if (currentSpeed is num) {
                   widget.controller.onChangePlaybackRate
                       ?.call(currentSpeed.toDouble());
+                }
+              },
+            )
+            ..addJavaScriptHandler(
+              handlerName: 'progressChangeEvent',
+              callback: (args) async {
+                final dynamic progress = args.first;
+                if (progress is num) {
+                  widget.controller.onChangeProgress?.call(progress.toDouble());
                 }
               },
             )
@@ -261,6 +268,7 @@ class _KinescopePlayerState extends State<KinescopePlayer> {
                           player.on(player.Events.Pause, function (event) { window.flutter_inappwebview.callHandler('events', 'pause'); });
                           player.on(player.Events.Ended, function (event) { window.flutter_inappwebview.callHandler('events', 'ended'); });
                           player.on(player.Events.PlaybackRateChange, function (data) { window.flutter_inappwebview.callHandler('playbackRateEvent', data.data.playbackRate);});
+                          player.on(player.Events.Progress, function (data) { window.flutter_inappwebview.callHandler('progressChangeEvent', data.data.bufferedTime);});
                           player.on(player.Events.FullscreenChange, async function (data) { window.flutter_inappwebview.callHandler('onChangeFullscreen', data.data.isFullscreen);
                           });
                       });

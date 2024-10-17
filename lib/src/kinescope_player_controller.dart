@@ -50,6 +50,7 @@ class KinescopePlayerController {
 
   void Function(bool)? onChangeFullscreen;
   void Function(double)? onChangePlaybackRate;
+  void Function(double)? onChangeProgress;
 
   /// Currently playing video id
   String get videoId => _videoId;
@@ -60,6 +61,7 @@ class KinescopePlayerController {
     this.parameters = const PlayerParameters(),
     this.onChangeFullscreen,
     this.onChangePlaybackRate,
+    this.onChangeProgress,
   }) : _videoId = videoId;
 
   /// Loads the video as per the [videoId] provided.
