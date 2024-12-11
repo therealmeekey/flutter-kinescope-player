@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/foundation.dart' show kDebugMode, kIsWeb;
@@ -50,10 +49,10 @@ class KinescopePlayer extends StatefulWidget {
 
   /// A widget to play Kinescope videos.
   const KinescopePlayer({
-    Key? key,
+    super.key,
     required this.controller,
     this.aspectRatio = 16 / 9,
-  }) : super(key: key);
+  });
 
   @override
   _KinescopePlayerState createState() => _KinescopePlayerState();
@@ -173,9 +172,6 @@ class _KinescopePlayerState extends State<KinescopePlayer> {
             resources: [PermissionResourceType.PROTECTED_MEDIA_ID],
             action: PermissionResponseAction.GRANT,
           );
-        },
-        iosOnNavigationResponse: (_, __) async {
-          return IOSNavigationResponseAction.CANCEL;
         },
         shouldOverrideUrlLoading: (_, __) async => Platform.isIOS
             ? NavigationActionPolicy.ALLOW
