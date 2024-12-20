@@ -110,9 +110,13 @@ class _KinescopePlayerState extends State<KinescopePlayer> {
               callback: (args) {
                 final dynamic seconds = args.first;
                 if (seconds is num) {
-                  widget.controller.getCurrentTimeCompleter?.complete(
-                    Duration(milliseconds: (seconds * 1000).ceil()),
-                  );
+                  if (widget.controller.getCurrentTimeCompleter != null &&
+                      !widget.controller.getCurrentTimeCompleter!.isCompleted) {
+                    widget.controller.getCurrentTimeCompleter?.complete(
+                      Duration(milliseconds: (seconds * 1000).ceil()),
+                    );
+                    widget.controller.getCurrentTimeCompleter = null;
+                  }
                 }
               },
             )
@@ -157,9 +161,12 @@ class _KinescopePlayerState extends State<KinescopePlayer> {
               callback: (args) {
                 final dynamic seconds = args.first;
                 if (seconds is num) {
-                  widget.controller.getDurationCompleter?.complete(
-                    Duration(milliseconds: (seconds * 1000).ceil()),
-                  );
+                  if (widget.controller.getDurationCompleter != null &&
+                      !widget.controller.getDurationCompleter!.isCompleted) {
+                    widget.controller.getDurationCompleter?.complete(
+                      Duration(milliseconds: (seconds * 1000).ceil()),
+                    );
+                  }
                 }
               },
             );
