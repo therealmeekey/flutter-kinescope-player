@@ -157,6 +157,13 @@ class _KinescopePlayerState extends State<KinescopePlayer> {
               },
             )
             ..addJavaScriptHandler(
+              handlerName: 'pipChangeEvent',
+              callback: (args) {
+                final bool isPip = args.first;
+                widget.controller.onChangePip?.call(isPip);
+              },
+            )
+            ..addJavaScriptHandler(
               handlerName: 'getDurationResult',
               callback: (args) {
                 final dynamic seconds = args.first;
@@ -293,7 +300,10 @@ class _KinescopePlayerState extends State<KinescopePlayer> {
                           player.on(player.Events.Pause, function (event) { window.flutter_inappwebview.callHandler('events', 'pause'); });
                           player.on(player.Events.Ended, function (event) { window.flutter_inappwebview.callHandler('events', 'ended'); });
                           player.on(player.Events.PlaybackRateChange, function (data) { window.flutter_inappwebview.callHandler('playbackRateEvent', data.data.playbackRate);});
-                          player.on(player.Events.FullscreenChange, async function (data) { window.flutter_inappwebview.callHandler('onChangeFullscreen', data.data.isFullscreen);
+                          player.on(player.Events.PipChange, function (data) { window.flutter_inappwebview.callHandler('pipChangeEvent', data.data.isPip);});
+                          player.on(player.Events.FullscreenChange, async function (data) { 
+                            kinescopePlayer.setFullscreen(false);
+                            window.flutter_inappwebview.callHandler('onChangeFullscreen', data.data.isFullscreen);
                           });
                       });
               }

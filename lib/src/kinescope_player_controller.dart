@@ -48,6 +48,7 @@ class KinescopePlayerController {
   /// [Stream], that provides current player status
   Stream<KinescopePlayerStatus> get status => statusController.stream;
 
+  void Function(bool)? onChangePip;
   void Function(bool)? onChangeFullscreen;
   void Function(double)? onChangePlaybackRate;
   void Function(double)? onChangeProgress;
@@ -59,6 +60,7 @@ class KinescopePlayerController {
     /// The video id with which the player initializes.
     String videoId, {
     this.parameters = const PlayerParameters(),
+    this.onChangePip,
     this.onChangeFullscreen,
     this.onChangePlaybackRate,
     this.onChangeProgress,
