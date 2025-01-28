@@ -49,12 +49,14 @@ class KinescopePlayer extends StatefulWidget {
   /// Aspect ratio for the player,
   /// by default it's 16 / 9.
   final double aspectRatio;
+  final bool useCustomFullscreen;
 
   /// A widget to play Kinescope videos.
   const KinescopePlayer({
     super.key,
     required this.controller,
     this.aspectRatio = 16 / 9,
+    this.useCustomFullscreen = false,
   });
 
   @override
@@ -154,6 +156,10 @@ class _KinescopePlayerState extends State<KinescopePlayer> {
               callback: (args) {
                 final bool isFullscreen = args.first;
                 widget.controller.onChangeFullscreen?.call(isFullscreen);
+                widget.controller.webViewController.evaluateJavascript(
+                  source:
+                      "document.getElementById('player').style.height = '100%';",
+                );
               },
             )
             ..addJavaScriptHandler(
@@ -161,6 +167,10 @@ class _KinescopePlayerState extends State<KinescopePlayer> {
               callback: (args) {
                 final bool isPip = args.first;
                 widget.controller.onChangePip?.call(isPip);
+                widget.controller.webViewController.evaluateJavascript(
+                  source:
+                      "document.getElementById('player').style.height = '100%';",
+                );
               },
             )
             ..addJavaScriptHandler(
@@ -179,6 +189,8 @@ class _KinescopePlayerState extends State<KinescopePlayer> {
             );
         },
         initialSettings: InAppWebViewSettings(
+          iframeAllowFullscreen: true,
+          useShouldInterceptRequest: true,
           useShouldOverrideUrlLoading: true,
           mediaPlaybackRequiresUserGesture: false,
           transparentBackground: true,
@@ -241,10 +253,12 @@ class _KinescopePlayerState extends State<KinescopePlayer> {
         }
           #player {
               position: fixed;
-              width: 100%;
-              height: 100%;
               left: 0;
-              top: 0;
+            width: 100vw;
+            height: 100vh;
+            object-fit: cover;
+            margin: 0;  /* Убирает отступы */
+            padding: 0; /* Убирает внутренние отступы */
           }
       </style>
   
@@ -302,8 +316,14 @@ class _KinescopePlayerState extends State<KinescopePlayer> {
                           player.on(player.Events.PlaybackRateChange, function (data) { window.flutter_inappwebview.callHandler('playbackRateEvent', data.data.playbackRate);});
                           player.on(player.Events.PipChange, function (data) { window.flutter_inappwebview.callHandler('pipChangeEvent', data.data.isPip);});
                           player.on(player.Events.FullscreenChange, async function (data) { 
-                            kinescopePlayer.setFullscreen(false);
-                            window.flutter_inappwebview.callHandler('onChangeFullscreen', data.data.isFullscreen);
+                            if (${widget.useCustomFullscreen}) {
+                              kinescopePlayer.setFullscreen(false);
+                              if (data.data.isFullscreen) {
+                                window.flutter_inappwebview.callHandler('onChangeFullscreen', data.data.isFullscreen);
+                              }
+                            } else {
+                              window.flutter_inappwebview.callHandler('onChangeFullscreen', data.data.isFullscreen);
+                            }
                           });
                       });
               }
