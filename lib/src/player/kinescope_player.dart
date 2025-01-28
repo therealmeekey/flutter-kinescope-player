@@ -156,10 +156,7 @@ class _KinescopePlayerState extends State<KinescopePlayer> {
               callback: (args) {
                 final bool isFullscreen = args.first;
                 widget.controller.onChangeFullscreen?.call(isFullscreen);
-                widget.controller.webViewController.evaluateJavascript(
-                  source:
-                      "document.getElementById('player').style.height = '100%';",
-                );
+                changeSizeToDefault();
               },
             )
             ..addJavaScriptHandler(
@@ -167,10 +164,7 @@ class _KinescopePlayerState extends State<KinescopePlayer> {
               callback: (args) {
                 final bool isPip = args.first;
                 widget.controller.onChangePip?.call(isPip);
-                widget.controller.webViewController.evaluateJavascript(
-                  source:
-                      "document.getElementById('player').style.height = '100%';",
-                );
+                changeSizeToDefault();
               },
             )
             ..addJavaScriptHandler(
@@ -226,6 +220,15 @@ class _KinescopePlayerState extends State<KinescopePlayer> {
     );
   }
 
+  void changeSizeToDefault() {
+    widget.controller.webViewController.evaluateJavascript(
+      source: "document.getElementById('player').style.height = '100%';",
+    );
+    widget.controller.webViewController.evaluateJavascript(
+      source: "document.getElementById('player').style.width = '100%';",
+    );
+  }
+
   String? getUserArgent() {
     if (kIsWeb) {
       return null;
@@ -252,8 +255,8 @@ class _KinescopePlayerState extends State<KinescopePlayer> {
             height: 100%;
         }
           #player {
-              position: fixed;
-              left: 0;
+            position: fixed;
+            left: 0;
             width: 100vw;
             height: 100vh;
             object-fit: cover;
