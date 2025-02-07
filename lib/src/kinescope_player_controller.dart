@@ -15,7 +15,6 @@
 // ignore_for_file: member-ordering-extended
 import 'dart:async';
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:flutter_kinescope_sdk/src/data/player_parameters.dart';
 import 'package:flutter_kinescope_sdk/src/data/player_status.dart';
@@ -39,6 +38,7 @@ class KinescopePlayerController {
 
   /// [Completer] for [getCurrentTime] method
   Completer<Duration>? getCurrentTimeCompleter;
+  Completer<bool>? getIsPausedCompleter;
 
   /// [Completer] for [getDuration] method
   Completer<Duration>? getDurationCompleter;
@@ -153,6 +153,17 @@ class KinescopePlayerController {
   /// Mutes the player.
   void mute() {
     webViewController.evaluateJavascript(source: 'mute();');
+  }
+
+  Future<bool> isPaused() async {
+    getIsPausedCompleter = Completer<bool>();
+
+    await webViewController.evaluateJavascript(
+      source: 'isPaused();',
+    );
+
+    final isPaused = await getIsPausedCompleter?.future;
+    return isPaused ?? true;
   }
 
   /// Unmutes the player.

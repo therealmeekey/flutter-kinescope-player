@@ -14,7 +14,7 @@
 
 import 'dart:io';
 
-import 'package:flutter/foundation.dart' show kDebugMode, kIsWeb;
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/widgets.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 
@@ -119,6 +119,15 @@ class _KinescopePlayerState extends State<KinescopePlayer> {
                     );
                     widget.controller.getCurrentTimeCompleter = null;
                   }
+                }
+              },
+            )
+            ..addJavaScriptHandler(
+              handlerName: 'isPaused',
+              callback: (args) {
+                final dynamic isPaused = args.first;
+                if (isPaused is bool) {
+                  widget.controller.getIsPausedCompleter?.complete(isPaused);
                 }
               },
             )
@@ -335,6 +344,13 @@ class _KinescopePlayerState extends State<KinescopePlayer> {
           function play() {
               if (kinescopePlayer != null)
                 kinescopePlayer.play();
+          }
+                    
+          function isPaused() {
+              if (kinescopePlayer != null)
+              kinescopePlayer.isPaused().then((value) => {
+                  window.flutter_inappwebview.callHandler('isPaused', value);
+                });
           }
   
           function pause() {
