@@ -67,6 +67,7 @@ class _KinescopePlayerState extends State<KinescopePlayer> {
   late String videoId;
   late String externalId;
   late String baseUrl;
+  final GlobalKey _webViewKey = GlobalKey();
 
   @override
   void initState() {
@@ -91,6 +92,7 @@ class _KinescopePlayerState extends State<KinescopePlayer> {
     return AspectRatio(
       aspectRatio: widget.aspectRatio,
       child: InAppWebView(
+        key: _webViewKey,
         onWebViewCreated: (controller) {
           widget.controller.webViewController = controller;
           controller
